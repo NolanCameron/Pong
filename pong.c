@@ -1,6 +1,24 @@
 #include "pong.h"
+#include "math.h"
 
-void scoreGame(Game *game){
+void scoreGame(Game *game, Side side){
+
+    Ball *ball = &(game->ball);
+    Screen *screen = &(game->screen);
+
+    //Print who scored
+
+    ball->x = screen->width/2;
+    ball->y = screen->height/2;
+
+    ball->xVel = ball->xVel/abs(ball->xVel);
+    ball->yVel = ball->yVel/abs(ball->yVel);
+
+    if(game->player_1.side == side){
+        game->player_1.score += 1;
+    }else{
+        game->player_2.score += 1;
+    }
 
 }
 
@@ -40,22 +58,14 @@ void runGameTick(Game *game){
 
     //Check ball score
     if(ball->x + ball->xVel > screen->width){
-        if(player_1->side == RIGHT)
-            player_2->score++;
-        if(player_2->side == RIGHT)
-            player_1->score++;
 
-        scoreGame(game);
+        scoreGame(game, RIGHT);
         return;
     }
 
     if(ball->x + ball->xVel < 0){
-        if(player_1->side == LEFT)
-            player_2->score++;
-        if(player_2->side == LEFT)
-            player_1->score++;
 
-        scoreGame(game);
+        scoreGame(game, LEFT);
         return;
     }
 
@@ -63,14 +73,25 @@ void runGameTick(Game *game){
     if(ball->x < rightPlayer->paddle.x && ball->x + ball->xVel >= rightPlayer->paddle.x) //Check x collosion
         if(ball->y + ball->yVel <= rightPlayer->paddle.y && ball->y + ball->yVel >= rightPlayer->paddle.y + rightPlayer->paddle.length){//Check y collosion
             ball->xVel *= -1;
-            ball->yVel *= -1;
+            ball->xVel += ball->xVel/abs(ball->xVel);
+            ball->yVel += ball->yVel/abs(ball->yVel);
         }
 
-    if(ball->x < rightPlayer->paddle.x && ball->x + ball->xVel >= rightPlayer->paddle.x) //Check x collosion
-        if(ball->y + ball->yVel <= rightPlayer->paddle.y && ball->y + ball->yVel >= rightPlayer->paddle.y + rightPlayer->paddle.length){//Check y collosion
+    if(ball->x > leftPlayer->paddle.x && ball->x + ball->xVel <= leftPlayer->paddle.x) //Check x collosion
+        if(ball->y + ball->yVel >= leftPlayer->paddle.y && ball->y + ball->yVel <= leftPlayer->paddle.y + leftPlayer->paddle.length){//Check y collosion
             ball->xVel *= -1;
-            ball->yVel *= -1;
+            ball->xVel += ball->xVel/abs(ball->xVel);
+            ball->yVel += ball->yVel/abs(ball->yVel);
         }
+
+    
+    //Check top bottom collosion
+    if(ball->y + ball->yVel < 0 || ball->y + ball->yVel > screen->height){
+        ball->yVel *= -1;
+    }
+
+    ball->x += ball->xVel;
+    ball->y += ball->yVel;
     
 
 }

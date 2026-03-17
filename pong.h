@@ -33,3 +33,5 @@ typedef struct{
     int (*getPlayer1Direction)();//Returns the change in player paddle
     int (*getPlayer2Direction)();//Returns the change in player paddle
 }Game;
+
+void runGameTick(Game *);
